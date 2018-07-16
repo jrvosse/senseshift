@@ -1,0 +1,3 @@
+[submodule "histwords"]
+	path = histwords
+	url = git@github.com:williamleif/histwords
