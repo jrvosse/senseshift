@@ -1,4 +1,5 @@
 import sys 
+import collections
 import pandas as pd
 import numpy as np
 import scipy.stats
@@ -16,16 +17,18 @@ if __name__ == "__main__":
         target = row['target']
         ref    = row['ref']
         gold   = int(row['gold'])
-        # offset = int(row['t'])
+        offset = int(row['t'])
         time_sims = embeddings.get_time_sims(target, ref)
-        rho, p = scipy.stats.spearmanr(time_sims.keys(), time_sims.values())
+        t = collections.OrderedDict([])
+        for y in range(offset, 2000, 10): t[y]=time_sims[y]
+        rho, p = scipy.stats.spearmanr(t.keys(), t.values())
         if p < 0.05:
             if np.sign(rho) == np.sign(gold):
-                print "significant and correct: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(time_sims.values()))
+                print "significant and correct: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(t.items()))
             else:
-                print "significant and incorrect: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(time_sims.values()))
+                print "significant and incorrect: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(t.items()))
         else:
             if np.sign(rho) == np.sign(gold):
-                print "insignificant and correct: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(time_sims.values()))
+                print "insignificant and correct: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(t.items()))
             else:
-                print "insignificant and incorrect: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(time_sims.values()))
+                print "insignificant and incorrect: {target:s}/{ref:s}, {rho:0.2f}, {p:0.2f}, {series:s}".format(target=target, ref=ref, rho=rho,p=p, series=str(t.items()))
